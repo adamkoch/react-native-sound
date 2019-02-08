@@ -1,5 +1,7 @@
 # react-native-sound
 
+Forked to re-enable tvOS target.
+
 React Native module for playing sound clips on iOS, Android, and Windows.
 
 'NOTE: React-native-sound does not support streaming'. See #353 for more info. Of course, we would welcome a PR if someone wants to take this on.

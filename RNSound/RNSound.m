@@ -305,16 +305,6 @@ RCT_EXPORT_METHOD(getCurrentTime:(nonnull NSNumber*)key
   }
 }
 
-RCT_EXPORT_METHOD(setSpeakerPhone:(BOOL) on) {
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    if (on) {
-        [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-    } else {
-        [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
-    }
-    [session setActive:true error:nil];
-}
-
 + (BOOL)requiresMainQueueSetup
 {
     return YES;

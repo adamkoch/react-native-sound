@@ -266,12 +266,6 @@ Sound.setMode = function(value) {
   }
 };
 
-Sound.setSpeakerPhone = function(value) {
-  if (!IsAndroid && !IsWindows) {
-    RNSound.setSpeakerPhone(value)
-  }
-}
-
 Sound.MAIN_BUNDLE = RNSound.MainBundlePath;
 Sound.DOCUMENT = RNSound.NSDocumentDirectory;
 Sound.LIBRARY = RNSound.NSLibraryDirectory;

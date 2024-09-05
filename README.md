@@ -21,31 +21,31 @@ Of course, we would welcome a PR if someone wants to take this on.
 In iOS, the library uses [AVAudioPlayer][], not [AVPlayer][].
 
 [#353]: https://github.com/zmxv/react-native-sound/issues/353
-[avaudioplayer]: https://developer.apple.com/documentation/avfoundation/avaudioplayer
-[avplayer]: https://developer.apple.com/documentation/avfoundation/avplayer
+[AVAudioPlayer]: https://developer.apple.com/documentation/avfoundation/avaudioplayer
+[AVPlayer]: https://developer.apple.com/documentation/avfoundation/avplayer
 
-| Feature                           | iOS | Android | Windows |
-| --------------------------------- | --- | ------- | ------- |
-| Load sound from the app bundle    | ✓   | ✓       | ✓       |
-| Load sound from other directories | ✓   | ✓       | ✓       |
-| Load sound from the network       | ✓   | ✓       |
-| Play sound                        | ✓   | ✓       | ✓       |
-| Playback completion callback      | ✓   | ✓       | ✓       |
-| Pause                             | ✓   | ✓       | ✓       |
-| Resume                            | ✓   | ✓       | ✓       |
-| Stop                              | ✓   | ✓       | ✓       |
-| Reset                             |     | ✓       |
-| Release resource                  | ✓   | ✓       | ✓       |
-| Get duration                      | ✓   | ✓       | ✓       |
-| Get number of channels            | ✓   |         |
-| Get/set volume                    | ✓   | ✓       | ✓       |
-| Get system volume                 | ✓   | ✓       |
-| Set system volume                 |     | ✓       |
-| Get/set pan                       | ✓   |         |
-| Get/set loops                     | ✓   | ✓       | ✓       |
-| Get/set exact loop count          | ✓   |         |
-| Get/set current time              | ✓   | ✓       | ✓       |
-| Set speed                         | ✓   | ✓       |
+Feature | iOS | Android | Windows
+---|---|---|---
+Load sound from the app bundle | ✓ | ✓ | ✓
+Load sound from other directories | ✓ | ✓ | ✓
+Load sound from the network | ✓ | ✓ |
+Play sound | ✓ | ✓ | ✓
+Playback completion callback | ✓ | ✓ | ✓
+Pause | ✓ | ✓ | ✓
+Resume | ✓ | ✓ | ✓
+Stop | ✓ | ✓ | ✓
+Reset |  | ✓ |
+Release resource | ✓ | ✓ | ✓
+Get duration | ✓ | ✓ | ✓
+Get number of channels | ✓ |   |
+Get/set volume | ✓ | ✓ | ✓
+Get system volume | ✓ | ✓ |
+Set system volume |   | ✓ |
+Get/set pan | ✓ |   |
+Get/set loops | ✓ | ✓ | ✓
+Get/set exact loop count | ✓ |   |
+Get/set current time | ✓ | ✓ | ✓
+Set speed | ✓ | ✓ |
 
 ## Installation
 
@@ -54,7 +54,6 @@ First install the npm package from your app directory:
 ```javascript
 npm install react-native-sound --save
 ```
-
 Note: If your react-native version is >= 0.60 then linking is done automatically.
 
 If your react-native version is < 0.60 then link it using:
@@ -89,10 +88,11 @@ documentation on this would be welcome!
 
 Please see the Wiki for these details https://github.com/zmxv/react-native-sound/wiki/Installation
 
+
 ## Help with React-Native-Sound
 
-- For react-native-sound developers [![][gitter badge]](https://gitter.im/react-native-sound/developers)
-- For help using react-native-sound [![][gitter badge]](https://gitter.im/react-native-sound/Help)
+* For react-native-sound developers  [![][gitter badge]](https://gitter.im/react-native-sound/developers)
+* For help using react-native-sound  [![][gitter badge]](https://gitter.im/react-native-sound/Help)
 
 [gitter badge]: https://img.shields.io/gitter/room/react-native-sound/developers.svg?format=flat-square
 
@@ -115,32 +115,27 @@ First you'll need to add audio files to your project.
 
 ```js
 // Import the react-native-sound module
-var Sound = require("react-native-sound");
+var Sound = require('react-native-sound');
 
 // Enable playback in silence mode
-Sound.setCategory("Playback");
+Sound.setCategory('Playback');
 
 // Load the sound file 'whoosh.mp3' from the app bundle
 // See notes below about preloading sounds within initialization code below.
-var whoosh = new Sound("whoosh.mp3", Sound.MAIN_BUNDLE, (error) => {
+var whoosh = new Sound('whoosh.mp3', Sound.MAIN_BUNDLE, (error) => {
   if (error) {
-    console.log("failed to load the sound", error);
+    console.log('failed to load the sound', error);
     return;
   }
   // loaded successfully
-  console.log(
-    "duration in seconds: " +
-      whoosh.getDuration() +
-      "number of channels: " +
-      whoosh.getNumberOfChannels()
-  );
+  console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
 
   // Play the sound with an onEnd callback
   whoosh.play((success) => {
     if (success) {
-      console.log("successfully finished playing");
+      console.log('successfully finished playing');
     } else {
-      console.log("playback failed due to audio decoding errors");
+      console.log('playback failed due to audio decoding errors');
     }
   });
 });
@@ -155,15 +150,15 @@ whoosh.setPan(1);
 whoosh.setNumberOfLoops(-1);
 
 // Get properties of the player instance
-console.log("volume: " + whoosh.getVolume());
-console.log("pan: " + whoosh.getPan());
-console.log("loops: " + whoosh.getNumberOfLoops());
+console.log('volume: ' + whoosh.getVolume());
+console.log('pan: ' + whoosh.getPan());
+console.log('loops: ' + whoosh.getNumberOfLoops());
 
 // Seek to a specific point in seconds
 whoosh.setCurrentTime(2.5);
 
 // Get the current playback point in seconds
-whoosh.getCurrentTime((seconds) => console.log("at " + seconds));
+whoosh.getCurrentTime((seconds) => console.log('at ' + seconds));
 
 // Pause the sound
 whoosh.pause();

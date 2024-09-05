@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.requires_arc        = true
   s.platforms           = { :ios => "7.0", :tvos => "9.2" }
 
-  s.dependency 'React'
+  s.dependency 'React-Core'
 
   s.subspec 'Core' do |ss|
     ss.source_files     = "RNSound/*.{h,m}"

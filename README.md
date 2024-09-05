@@ -43,6 +43,7 @@ In iOS, the library uses [AVAudioPlayer][], not [AVPlayer][].
 | Set system volume                 |     | ✓       |
 | Get/set pan                       | ✓   |         |
 | Get/set loops                     | ✓   | ✓       | ✓       |
+| Get/set exact loop count          | ✓   |         |
 | Get/set current time              | ✓   | ✓       | ✓       |
 | Set speed                         | ✓   | ✓       |
 
@@ -54,7 +55,9 @@ First install the npm package from your app directory:
 npm install react-native-sound --save
 ```
 
-Then link it automatically using:
+Note: If your react-native version is >= 0.60 then linking is done automatically.
+
+If your react-native version is < 0.60 then link it using:
 
 ```javascript
 react-native link react-native-sound
@@ -66,7 +69,17 @@ react-native link react-native-sound
 undefined is not an object (evaluating 'RNSound.IsAndroid')
 ```
 
-**know that this is the most common build issue.** See [#592][] and the several
+you may additionally need to fully clear your build caches for Android. You
+can do this using
+
+```bash
+cd android
+./gradlew cleanBuildCache
+```
+
+After clearing your build cache, you should execute a new `react-native` build.
+
+If you still experience issues, **know that this is the most common build issue.** See [#592][] and the several
 issues linked from it for possible resolution. A pull request with improved
 documentation on this would be welcome!
 
@@ -102,32 +115,32 @@ First you'll need to add audio files to your project.
 
 ```js
 // Import the react-native-sound module
-var Sound = require('react-native-sound');
+var Sound = require("react-native-sound");
 
 // Enable playback in silence mode
-Sound.setCategory('Playback');
+Sound.setCategory("Playback");
 
 // Load the sound file 'whoosh.mp3' from the app bundle
 // See notes below about preloading sounds within initialization code below.
-var whoosh = new Sound('whoosh.mp3', Sound.MAIN_BUNDLE, (error) => {
+var whoosh = new Sound("whoosh.mp3", Sound.MAIN_BUNDLE, (error) => {
   if (error) {
-    console.log('failed to load the sound', error);
+    console.log("failed to load the sound", error);
     return;
   }
   // loaded successfully
   console.log(
-    'duration in seconds: ' +
+    "duration in seconds: " +
       whoosh.getDuration() +
-      'number of channels: ' +
-      whoosh.getNumberOfChannels(),
+      "number of channels: " +
+      whoosh.getNumberOfChannels()
   );
 
   // Play the sound with an onEnd callback
   whoosh.play((success) => {
     if (success) {
-      console.log('successfully finished playing');
+      console.log("successfully finished playing");
     } else {
-      console.log('playback failed due to audio decoding errors');
+      console.log("playback failed due to audio decoding errors");
     }
   });
 });
@@ -142,15 +155,15 @@ whoosh.setPan(1);
 whoosh.setNumberOfLoops(-1);
 
 // Get properties of the player instance
-console.log('volume: ' + whoosh.getVolume());
-console.log('pan: ' + whoosh.getPan());
-console.log('loops: ' + whoosh.getNumberOfLoops());
+console.log("volume: " + whoosh.getVolume());
+console.log("pan: " + whoosh.getPan());
+console.log("loops: " + whoosh.getNumberOfLoops());
 
 // Seek to a specific point in seconds
 whoosh.setCurrentTime(2.5);
 
 // Get the current playback point in seconds
-whoosh.getCurrentTime((seconds) => console.log('at ' + seconds));
+whoosh.getCurrentTime((seconds) => console.log("at " + seconds));
 
 // Pause the sound
 whoosh.pause();
@@ -184,7 +197,7 @@ whoosh.release();
 - [Expo Audio SDK][]
 - [#media on awesome-react-native][#media]
 
-[medium]: https://medium.com/@emmettharper/the-state-of-audio-libraries-in-react-native-7e542f57b3b4"
+[medium]: https://medium.com/@emmettharper/the-state-of-audio-libraries-in-react-native-7e542f57b3b4
 [react-native-audio-toolkit]: https://github.com/react-native-community/react-native-audio-toolkit
 [react-native-video]: https://github.com/react-native-community/react-native-video
 [expo audio sdk]: https://docs.expo.io/versions/latest/sdk/audio/

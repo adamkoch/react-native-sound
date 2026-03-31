@@ -5,9 +5,18 @@ import {
   Platform,
 } from "react-native";
 // This is what the pre-NA package used to support bundled Metro assets
-// passed as numeric require IDs.
+// passed as numeric require IDs. In newer RN/Metro builds this module may be
+// exposed either as the function itself or as an object with a default export.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource");
+const resolveAssetSourceModule = require("react-native/Libraries/Image/resolveAssetSource");
+const resolveAssetSource =
+  typeof resolveAssetSourceModule === "function"
+    ? resolveAssetSourceModule
+    : typeof resolveAssetSourceModule?.default === "function"
+      ? resolveAssetSourceModule.default
+      : typeof resolveAssetSourceModule?.resolveAssetSource === "function"
+        ? resolveAssetSourceModule.resolveAssetSource
+        : null;
 
 const IsAndroid = Platform.OS === "android";
 
@@ -75,7 +84,7 @@ class Sound {
     onError?: (error: string, props: SoundProps) => void,
     options?: SoundOptionTypes
   ) {
-    const asset = resolveAssetSource(filename);
+    const asset = resolveAssetSource != null ? resolveAssetSource(filename) : null;
     if (asset?.uri) {
       this._filename = asset.uri;
       if (typeof basePath === "function") {

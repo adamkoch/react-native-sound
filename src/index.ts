@@ -4,6 +4,10 @@ import {
   NativeModules,
   Platform,
 } from "react-native";
+// This is what the pre-NA package used to support bundled Metro assets
+// passed as numeric require IDs.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource");
 
 const IsAndroid = Platform.OS === "android";
 
@@ -66,23 +70,30 @@ class Sound {
   private onPlaySubscription: EmitterSubscription;
 
   constructor(
-    filename: string,
+    filename: string | number,
     basePath?: string | ((error: string, props: SoundProps) => void),
     onError?: (error: string, props: SoundProps) => void,
     options?: SoundOptionTypes
   ) {
-    if (filename.startsWith("http")) {
+    const asset = resolveAssetSource(filename);
+    if (asset?.uri) {
+      this._filename = asset.uri;
+      if (typeof basePath === "function") {
+        onError = basePath;
+      }
+    } else if (typeof filename === "string" && filename.startsWith("http")) {
       this._filename = filename;
     } else {
-      this._filename = basePath ? `${basePath}/${filename}` : filename;
+      const normalizedFilename = String(filename);
+      this._filename = basePath ? `${basePath}/${normalizedFilename}` : normalizedFilename;
 
-      if (IsAndroid && !basePath && isRelativePath(filename)) {
-        this._filename = filename.toLowerCase().replace(/\.[^.]+$/, "");
+      if (IsAndroid && !basePath && isRelativePath(normalizedFilename)) {
+        this._filename = normalizedFilename.toLowerCase().replace(/\.[^.]+$/, "");
       }
-    }
 
-    if (typeof basePath === "function") {
-      onError = basePath;
+      if (typeof basePath === "function") {
+        onError = basePath;
+      }
     }
 
     this._key = nextKey++;

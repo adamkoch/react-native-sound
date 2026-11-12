@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 open class Sound internal constructor(context:ReactApplicationContext):AudioManager.OnAudioFocusChangeListener  {
@@ -68,13 +69,14 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
       }
     }
 
-    player.setOnPreparedListener(object : OnPreparedListener {
-      var callbackWasCalled: Boolean = false
+    // The two listeners share one answer. An error can arrive long after the sound was prepared
+    // (the device's media service died), and answering a callback twice aborts the app.
+    val answered = AtomicBoolean(false)
 
+    player.setOnPreparedListener(object : OnPreparedListener {
       @Synchronized
       override fun onPrepared(mp: MediaPlayer) {
-        if (callbackWasCalled) return
-        callbackWasCalled = true
+        if (!answered.compareAndSet(false, true)) return
 
         val props = Arguments.createMap()
         props.putDouble("duration", mp.duration * .001)
@@ -88,12 +90,9 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
     })
 
     player.setOnErrorListener(object : OnErrorListener {
-      var callbackWasCalled: Boolean = false
-
       @Synchronized
       override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        if (callbackWasCalled) return true
-        callbackWasCalled = true
+        if (!answered.compareAndSet(false, true)) return true
         try {
           val props = Arguments.createMap()
           props.putInt("what", what)
@@ -207,17 +206,17 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
       this.focusedPlayerKey = key
     }
 
-    player.setOnCompletionListener(object : OnCompletionListener {
-      var callbackWasCalled: Boolean = false
+    // As in prepare(): completion and a later error share one answer.
+    val answered = AtomicBoolean(false)
 
+    player.setOnCompletionListener(object : OnCompletionListener {
       @Synchronized
       override fun onCompletion(mp: MediaPlayer) {
         if (!mp.isLooping) {
           if (key != null) {
             setOnPlay(false, key)
           }
-          if (callbackWasCalled) return
-          callbackWasCalled = true
+          if (!answered.compareAndSet(false, true)) return
           try {
             callback?.invoke(true)
           } catch (e: Exception) {
@@ -227,15 +226,12 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
       }
     })
     player.setOnErrorListener(object : OnErrorListener {
-      var callbackWasCalled: Boolean = false
-
       @Synchronized
       override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         if (key != null) {
           setOnPlay(false, key)
         }
-        if (callbackWasCalled) return true
-        callbackWasCalled = true
+        if (!answered.compareAndSet(false, true)) return true
         try {
           callback?.invoke(true)
         } catch (e: Exception) {

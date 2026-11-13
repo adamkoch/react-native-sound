@@ -233,7 +233,8 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
         }
         if (!answered.compareAndSet(false, true)) return true
         try {
-          callback?.invoke(true)
+          // Not played: the caller loads the sound again rather than keep a dead player.
+          callback?.invoke(false)
         } catch (e: Exception) {
           //Catches the exception: java.lang.RuntimeException·Illegal callback invocation from native module
         }
